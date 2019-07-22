@@ -3,17 +3,18 @@ import pygame as pg
 #Needs to be called before import homemade modules
 pg.init()
 
-from Display import Display
-from Window import Window
-from Button import Button
+from objects.Display import Display
+from objects.Window import Window
+from objects.Button import Button
 import numpy as np
 import sys
 
+img_path = "images/"
 
 width, height = (1420, 1050)
 window = Window((width, height))
 pg.event.set_blocked(pg.MOUSEMOTION)
-img = pg.image.load('logo.png')
+img = pg.image.load(img_path + 'logo.png')
 
 window.window.blit(img,(width/2-300,height/2-300))
 pg.display.flip()
