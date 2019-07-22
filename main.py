@@ -20,14 +20,14 @@ window.window.blit(img,(width/2-300,height/2-300))
 pg.display.flip()
 
 # Main interactive display
-d = Display((50,50), 30, num_x=21, num_y=12)
+d = Display((50,50), 30, num_x=19, num_y=10)
 window.add_element(d, "Display")
 frames = []
 current_frame = 0
 
 
-for i in range(4):
-    frames.append(Display((30+i*180,860), 3, num_x=21, num_y=12, boarder=2, sensetivity="NONE"))
+for i in range(6):
+    frames.append(Display((80+i*180,860), 3, num_x=19, num_y=10, boarder=2, sensetivity="NONE", simple=True))
     window.add_element(frames[-1], "D{}".format(i))
 
 # Buttons
@@ -56,9 +56,18 @@ def b4_func():
 b4 = Button((710, 805), (50,50), b4_func, text="  -", fit_text=False)
 window.add_element(b4, "prev frame button")
 
+def write_frames_to_file(filename):
+    with open(filename, "w") as fp:
+        for frame in frames:
+            #fp.write(frame)
+            pass
+
+b5 = Button((810, 805), 0, write_frames_to_file("test.fetch"), text="Save", fit_text=True)
+window.add_element(b5, "Save animation")
+
+
 window.window.fill(np.array([255,255,255])/2)
 window.update()
-
 while True:
     #Wait for input
     e = pg.event.wait()
