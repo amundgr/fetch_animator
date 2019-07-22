@@ -41,15 +41,17 @@ class Display(Element):
         self.frame = np.zeros((num_x, num_y))
         self.frame_prev_state = np.ones((num_x, num_y))
         self.background = black
+        self.frame_color = np.array([94,61,0])
         if simple:
             self.background = white * 0.25
         self.intensity = 255
         self.first = True
+        self.mark = False
 
 
     def draw(self):
         if self.first:
-            pg.draw.rect(self.window, [94,61,0], self.frame_rect, self.boarder)
+            pg.draw.rect(self.window, self.frame_color, self.frame_rect, self.boarder)
             pg.draw.rect(self.window, self.background, self.frame_rect)
             self.first = False
 
@@ -72,11 +74,31 @@ class Display(Element):
     def handle_event(self, **kwargs):
         mouse_event = kwargs["mouse_event"]
         if mouse_event[0] and self.frame_rect.collidepoint(kwargs["pos"]):
-            pos_x, pos_y = kwargs["pos"]
-            idx_x = (pos_x - self.pos_x - self.spacing) // (self.radius*2 + self.spacing) 
-            idx_y = (pos_y - self.pos_y - self.spacing) // (self.radius*2 + self.spacing)
-            self.frame[idx_x, idx_y] = self.intensity
-            self.changed = True
+            if not self.simple:
+                pos_x, pos_y = kwargs["pos"]
+                idx_x = (pos_x - self.pos_x - self.spacing) // (self.radius*2 + self.spacing) 
+                idx_y = (pos_y - self.pos_y - self.spacing) // (self.radius*2 + self.spacing)
+                self.frame[idx_x, idx_y] = self.intensity
+                self.changed = True
+            if self.simple:
+                self.toggle_mark()
+        elif self.simple and self.mark:
+            self.toggle_mark()
+
+    def toggle_mark(self):
+        print("asd")
+        if not self.mark:
+            self.mark = True
+            self.background = white/2
+            self.first = True
+            self.frame_prev_state = (self.frame_prev_state == 0).astype(np.int)
+        if self.mark:
+            self.mark = False
+            self.background = black
+            self.first = True
+            self.frame_prev_state = (self.frame_prev_state == 0).astype(np.int)
+        self.changed = True
+
             
     def clear_frame(self):
         self.frame = self.frame*0

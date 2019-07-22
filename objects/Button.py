@@ -1,4 +1,4 @@
-from Element import Element
+from .Element import Element
 import pygame as pg
 import numpy as np
 

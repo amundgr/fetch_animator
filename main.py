@@ -27,8 +27,9 @@ current_frame = 0
 
 
 for i in range(6):
-    frames.append(Display((80+i*180,860), 3, num_x=19, num_y=10, boarder=2, sensetivity="NONE", simple=True))
+    frames.append(Display((80+i*180,860), 3, num_x=19, num_y=10, boarder=2, simple=True))
     window.add_element(frames[-1], "D{}".format(i))
+frames[0].toggle_mark()
 
 # Buttons
 def b1_func():
