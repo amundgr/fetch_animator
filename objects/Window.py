@@ -34,6 +34,7 @@ class Window():
     def add_element(self, element, name_tag):
         element.set_window(self.window)
         self.element_dict[name_tag] = element
-        self.sensetivity_dict[element.sensetivity].append(name_tag)
-        #element.draw()
-        #pg.display.flip()
+        if not isinstance(element.sensetivity, list):
+            element.sensetivity = [element.sensetivity]
+        for sens in element.sensetivity:
+            self.sensetivity_dict[sens].append(name_tag)

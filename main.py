@@ -53,7 +53,7 @@ def b4_func():
     global current_frame
     if current_frame > 0: 
         current_frame = current_frame - 1
-b4 = Button((710, 805), (50,50), b4_func, text="  -", fit_text=False)
+b4 = Button((710, 805), (50,50), b4_func, text="  - ", fit_text=False)
 window.add_element(b4, "prev frame button")
 
 def write_frames_to_file(filename):
@@ -64,7 +64,6 @@ def write_frames_to_file(filename):
 
 b5 = Button((810, 805), 0, write_frames_to_file("test.fetch"), text="Save", fit_text=True)
 window.add_element(b5, "Save animation")
-
 
 window.window.fill(np.array([255,255,255])/2)
 window.update()
