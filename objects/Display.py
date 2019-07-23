@@ -68,7 +68,8 @@ class Display(Element):
                         pos_x_text, pos_y_text = np.array([pos_x, pos_y]) + self.radius - np.array(self.myfont.get_size())/2
                         self.window.blit(self.myfont, (pos_x_text, pos_y_text))
                 else:
-                    self.window.blit(self.img_clean, (pos_x, pos_y))
+                    if not self.simple:
+                        self.window.blit(self.img_clean, (pos_x, pos_y))
         self.frame_prev_state = cp.deepcopy(self.frame)
 
     def handle_event(self, **kwargs):
@@ -86,18 +87,7 @@ class Display(Element):
             self.toggle_mark()
 
     def toggle_mark(self):
-        print("asd")
-        if not self.mark:
-            self.mark = True
-            self.background = white/2
-            self.first = True
-            self.frame_prev_state = (self.frame_prev_state == 0).astype(np.int)
-        if self.mark:
-            self.mark = False
-            self.background = black
-            self.first = True
-            self.frame_prev_state = (self.frame_prev_state == 0).astype(np.int)
-        self.changed = True
+        self.mark = not self.mark
 
             
     def clear_frame(self):

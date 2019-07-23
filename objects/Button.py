@@ -54,7 +54,7 @@ class Button(Element):
                 self.pressed = True
 
         
-class TextFiled(Button):
+class TextField(Button):
 
     def __init__(self, pos, size, action=None, frame=4, sensetivity=["MOUSE", "KEY"], text="", fit_text=False, static=False):
         Button.__init__(self, pos, size, action, frame, sensetivity, text, fit_text)
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     pg.event.set_blocked(pg.MOUSEMOTION)
 
 
-    tf = TextFiled((50,50), (100, 50))
+    tf = TextField((50,50), (100, 50))
     window.add_element(tf, "example textfield")
 
     b = Button((10,10), (40,40), lambda : print(tf.value))
