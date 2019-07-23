@@ -5,7 +5,7 @@ pg.init()
 
 from objects.Display import Display
 from objects.Window import Window
-from objects.Button import Button
+from objects.Button import Button, TextField
 import numpy as np
 import sys
 
@@ -22,10 +22,8 @@ pg.display.flip()
 # Main interactive display
 d = Display((50,50), 30, num_x=19, num_y=10)
 window.add_element(d, "Display")
-frames = []
-current_frame = 0
 
-
+"""
 for i in range(6):
     frames.append(Display((80+i*180,860), 3, num_x=19, num_y=10, boarder=2, simple=True))
     window.add_element(frames[-1], "D{}".format(i))
@@ -65,7 +63,103 @@ def write_frames_to_file(filename):
 
 b5 = Button((810, 805), 0, write_frames_to_file("test.fetch"), text="Save", fit_text=True)
 window.add_element(b5, "Save animation")
+"""
+#-----------------------------------------------------------------------------------------#
+#-----------------------------------------BUTTONS-----------------------------------------#
+#-----------------------------------------------------------------------------------------#
 
+def func_cls_button():
+    return
+cls_button = Button((50,900), 0, func_cls_button , text="CLS", fit_text=True)
+window.add_element(cls_button, "cls_button")
+
+def func_cpy_button():
+    return
+cpy_button = Button((50,950), 0, func_cpy_button , text="CPY", fit_text=True)
+window.add_element(cpy_button, "cpy_button")
+
+def func_del_button():
+    return
+del_button = Button((50,1000), 0, func_del_button , text="DEL", fit_text=True)
+window.add_element(del_button, "del_button")
+
+def func_move_frame_right_button():
+    return
+move_frame_right_button = Button((440,900), 0, func_move_frame_right_button , text="<--", fit_text=True)
+window.add_element(move_frame_right_button, "move_frame_right_button")
+
+def func_move_mark_right_button():
+    return
+move_mark_right_button = Button((500,900), 0, func_move_mark_right_button , text=" <-", fit_text=True)
+window.add_element(move_mark_right_button, "move_mark_right_button")
+
+def func_add_frame_button():
+    return
+add_left_button = Button((560,900), 0, func_add_frame_button , text=" + ", fit_text=True)
+window.add_element(add_left_button, "add_left_button")
+
+def func_move_mark_left_button():
+    return
+move_mark_left_button = Button((620,900), 0, func_move_mark_left_button , text="-> ", fit_text=True)
+window.add_element(move_mark_left_button, "move_mark_Left_button")
+
+def func_move_frame_left_button():
+    return
+move_frame_left_button = Button((680,900), 0, func_move_frame_left_button , text="-->", fit_text=True)
+window.add_element(move_frame_left_button, "move_frame_Left_button")
+
+def func_set_pixel_value_button():
+    return
+set_pixel_value_button = Button((450,950), 0, func_set_pixel_value_button , text="VAL", fit_text=True)
+window.add_element(set_pixel_value_button, "set_pixel_value_button")
+
+def func_apply_frame_button():
+    return
+apply_frame_button = Button((540,950), 0, func_apply_frame_button , text="ADD", fit_text=True)
+window.add_element(apply_frame_button, "apply_frame_button")
+
+def func_mark_pixel_button():
+    return
+mark_pixel_button = Button((640,950), 0, func_mark_pixel_button , text="SEL", fit_text=True)
+window.add_element(mark_pixel_button, "mark_pixel_button")
+
+
+def func_play_button():
+    return
+play_button = Button((1000,900), 0, func_play_button , text="PLAY", fit_text=True)
+window.add_element(play_button, "play_button")
+
+def func_load_button():
+    return
+load_button = Button((1000,950), 0, func_load_button , text="LOAD", fit_text=True)
+window.add_element(load_button, "load_button")
+
+def func_save_button():
+    return
+save_button = Button((1000,1000), 0, func_save_button , text="SAVE", fit_text=True)
+window.add_element(save_button, "save_button")
+
+#-----------------------------------------------------------------------------------------#
+#---------------------------------------TEXT FIELDS---------------------------------------#
+#-----------------------------------------------------------------------------------------#
+
+def func_pwm_text_field():
+    return
+pwm_text_field = TextField((540,1000), 0, func_pwm_text_field , text="PWM", fit_text=True)
+window.add_element(pwm_text_field, "pwm_text_field")
+
+#-----------------------------------------------------------------------------------------#
+#-----------------------------------------FRAMES------------------------------------------#
+#-----------------------------------------------------------------------------------------#
+
+frames = []
+current_frame = 0
+frames.append(Display((100,700), 3, num_x=19, num_y=10, boarder=2, simple=True))
+window.add_element(frames[-1], "D{}".format(0))
+
+#-----------------------------------------------------------------------------------------#
+#---------------------------------------MAIN LOOP-----------------------------------------#
+#-----------------------------------------------------------------------------------------#
 window.window.fill(np.array([255,255,255])/2)
 window.update()
 while True:
