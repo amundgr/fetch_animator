@@ -1,17 +1,27 @@
 import pygame as pg
+import numpy as np
+import sys
 
 #Needs to be called before import homemade modules
 pg.init()
 
-from objects.Display import Display
+from objects.Display import Display, DummyDisplay
 from objects.Window import Window
 from objects.Button import Button, TextField
-import numpy as np
-import sys
+from objects.Element import Element
 
 img_path = "images/"
 
 width, height = (1420, 1050)
+num_x = 19
+num_y = 10
+animation = []
+mini_displays = []
+frame_numbers = []
+current_frame = 0
+current_display = 0
+num_mini_displays = 7
+
 window = Window((width, height))
 pg.event.set_blocked(pg.MOUSEMOTION)
 img = pg.image.load(img_path + 'logo.png')
@@ -19,66 +29,57 @@ img = pg.image.load(img_path + 'logo.png')
 window.window.blit(img,(width/2-300,height/2-300))
 pg.display.flip()
 
-# Main interactive display
-d = Display((50,50), 30, num_x=19, num_y=10)
-window.add_element(d, "Display")
 
-"""
-for i in range(6):
-    frames.append(Display((80+i*180,860), 3, num_x=19, num_y=10, boarder=2, simple=True))
-    window.add_element(frames[-1], "D{}".format(i))
-frames[0].toggle_mark()
+def get_frame_slice():
+    global current_frame, num_mini_displays, animation, current_display
+    if current_frame < num_mini_displays / 2:
+        current_display = current_frame
+        print("first", current_display)
+        return range(num_mini_displays)
+    elif current_frame > len(animation) - num_mini_displays / 2 - 1:
+        current_display = (num_mini_displays - 1) - (len(animation) - 1 - current_frame)
+        if current_display >= num_mini_displays:
+            current_display = num_mini_displays - 1
+        print("second", current_display)
+        return range(len(animation)-num_mini_displays, len(animation))
+    else:
+        current_display = round(num_mini_displays/2)-1
+        print("last", current_display)
+        return range(current_frame - num_mini_displays // 2, current_frame + num_mini_displays // 2 + 1)
 
-# Buttons
-def b1_func():
-    global current_frame
-    frames[current_frame].load_frame(d.get_frame())
-b1 = Button((50,810), 0, b1_func , text="Add frame", fit_text=True)
-window.add_element(b1, "add frame button")
+def update_mini_display():
+    for md, fn, idx in zip(mini_displays, frame_numbers, get_frame_slice()):
+        md.load_frame(animation[idx])
+        fn.change_text("{}".format(idx+1))
+        fn.infill_color = [200, 200, 200]
+    frame_numbers[current_display].infill_color = [100,100,100]
 
-def b2_func():
-    global current_frame
-    d.clear_frame()
-b2 = Button((300,810), 0, b2_func, text="Clear frame", fit_text=True)
-window.add_element(b2, "clear frame button")
 
-def b3_func():
-    global current_frame
-    current_frame = current_frame + 1
-b3 = Button((650, 805), (50,50), b3_func, text=" + ", fit_text=False)
-window.add_element(b3, "next frame button")
-
-def b4_func():
-    global current_frame
-    if current_frame > 0: 
-        current_frame = current_frame - 1
-b4 = Button((710, 805), (50,50), b4_func, text="  - ", fit_text=False)
-window.add_element(b4, "prev frame button")
-
-def write_frames_to_file(filename):
-    with open(filename, "w") as fp:
-        for frame in frames:
-            #fp.write(frame)
-            pass
-
-b5 = Button((810, 805), 0, write_frames_to_file("test.fetch"), text="Save", fit_text=True)
-window.add_element(b5, "Save animation")
-"""
 #-----------------------------------------------------------------------------------------#
 #-----------------------------------------BUTTONS-----------------------------------------#
 #-----------------------------------------------------------------------------------------#
 
 def func_cls_button():
+    main_display.clear_frame()
     return
 cls_button = Button((50,900), 0, func_cls_button , text="CLS", fit_text=True)
 window.add_element(cls_button, "cls_button")
 
 def func_cpy_button():
+    main_display.load_frame(animation[current_frame])
     return
 cpy_button = Button((50,950), 0, func_cpy_button , text="CPY", fit_text=True)
 window.add_element(cpy_button, "cpy_button")
 
 def func_del_button():
+    global animation, current_frame, num_mini_displays, num_x, num_y
+    if len(animation) == num_mini_displays:
+        animation[current_frame] = np.zeros((num_x, num_y))
+    else:
+        del animation[current_frame]
+    if current_frame > 0:
+        current_frame -= 1
+    update_mini_display()
     return
 del_button = Button((50,1000), 0, func_del_button , text="DEL", fit_text=True)
 window.add_element(del_button, "del_button")
@@ -89,16 +90,27 @@ move_frame_right_button = Button((440,900), 0, func_move_frame_right_button , te
 window.add_element(move_frame_right_button, "move_frame_right_button")
 
 def func_move_mark_right_button():
+    global current_frame
+    if current_frame > 0:
+        current_frame -= 1
+        update_mini_display()
     return
 move_mark_right_button = Button((500,900), 0, func_move_mark_right_button , text=" <-", fit_text=True)
 window.add_element(move_mark_right_button, "move_mark_right_button")
 
 def func_add_frame_button():
+    global num_x, num_y
+    animation.append(np.zeros((num_x, num_y)))
+    update_mini_display()
     return
 add_left_button = Button((560,900), 0, func_add_frame_button , text=" + ", fit_text=True)
 window.add_element(add_left_button, "add_left_button")
 
 def func_move_mark_left_button():
+    global current_frame, animation
+    if current_frame < len(animation)-1:
+        current_frame += 1
+        update_mini_display()
     return
 move_mark_left_button = Button((620,900), 0, func_move_mark_left_button , text="-> ", fit_text=True)
 window.add_element(move_mark_left_button, "move_mark_Left_button")
@@ -110,19 +122,22 @@ window.add_element(move_frame_left_button, "move_frame_Left_button")
 
 def func_set_pixel_value_button():
     return
-set_pixel_value_button = Button((450,950), 0, func_set_pixel_value_button , text="VAL", fit_text=True)
+set_pixel_value_button = Button((450,950), 0, func_set_pixel_value_button , text="VAL", fit_text=True, toggle=True)
 window.add_element(set_pixel_value_button, "set_pixel_value_button")
 
 def func_apply_frame_button():
+    animation[current_frame] = main_display.get_frame()
+    mini_displays[current_display].load_frame(animation[current_frame])
     return
 apply_frame_button = Button((540,950), 0, func_apply_frame_button , text="ADD", fit_text=True)
 window.add_element(apply_frame_button, "apply_frame_button")
 
 def func_mark_pixel_button():
     return
-mark_pixel_button = Button((640,950), 0, func_mark_pixel_button , text="SEL", fit_text=True)
+mark_pixel_button = Button((640,950), 0, func_mark_pixel_button , text="SEL", fit_text=True, toggle=True)
+mark_pixel_button.set_pair_button(set_pixel_value_button)
+set_pixel_value_button.set_pair_button(mark_pixel_button)
 window.add_element(mark_pixel_button, "mark_pixel_button")
-
 
 def func_play_button():
     return
@@ -151,16 +166,26 @@ window.add_element(pwm_text_field, "pwm_text_field")
 #-----------------------------------------------------------------------------------------#
 #-----------------------------------------FRAMES------------------------------------------#
 #-----------------------------------------------------------------------------------------#
+for i in range(7):
+    mini_displays.append(DummyDisplay((55+i*170,700), 3, num_x=19, num_y=10, boarder=2))
+    frame_numbers.append(TextField((105+i*170,800), (60,40), text="{}".format(i+1), fit_text=False, sensetivity=[]))
+    window.add_element(mini_displays[-1], "D{}".format(i))
+    window.add_element(frame_numbers[-1], "N{}".format(i+1))
+    animation.append(mini_displays[-1].get_frame())
 
-frames = []
-current_frame = 0
-frames.append(Display((100,700), 3, num_x=19, num_y=10, boarder=2, simple=True))
-window.add_element(frames[-1], "D{}".format(0))
+#-----------------------------------------------------------------------------------------#
+#--------------------------------------MAIN DISPLAY---------------------------------------#
+#-----------------------------------------------------------------------------------------#
+
+main_display = Display((50,50), 30, num_x=num_x, num_y=num_y)
+window.add_element(main_display, "Display")
 
 #-----------------------------------------------------------------------------------------#
 #---------------------------------------MAIN LOOP-----------------------------------------#
 #-----------------------------------------------------------------------------------------#
+
 window.window.fill(np.array([255,255,255])/2)
+update_mini_display()
 window.update()
 while True:
     #Wait for input

@@ -11,23 +11,24 @@ numbers = np.array([pg.K_0, pg.K_1, pg.K_2, pg.K_3, pg.K_4,
 
 
 class Button(Element):
-    def __init__(self, pos, size, action, frame=4, sensetivity="MOUSE", text="", fit_text=False):
+    def __init__(self, pos, size, action, frame=4, sensetivity="MOUSE", text="", fit_text=False, toggle=False, pair_button=None):
         Element.__init__(self, pos, sensetivity)
         self.textsurface = myfont.render(text, False, (0, 0, 0)) 
         self.pos = self.pos_x, self.pos_y = pos
         self.action = action
         self.frame = frame
         self.marked = False
+        self.pair_button = pair_button
         if fit_text:
             self.width, self.height = self.textsurface.get_size()
             self.width += frame*3; self.height += frame*2
             self.size = (self.width, self.height)
-            print(self.height)
         else:
             self.size = self.width, self.height = size
         self._create_rect()
         self.pressed = False
         self.infill_color = [200,200,200]
+        self.toggle = toggle
 
     def _create_rect(self):
         self.frame_rect = pg.Rect(self.pos_x, self.pos_y, self.width, self.height)
@@ -38,41 +39,64 @@ class Button(Element):
         pg.draw.rect(self.window, white, self.frame_rect)
         pg.draw.rect(self.window, self.infill_color, self.infill_rect)
         self.window.blit(self.textsurface, (self.pos_x+self.frame*1.5, self.pos_y+self.frame*1.5))
-        if self.pressed:
+        if self.pressed and not self.toggle:
             self.infill_color = [200,200,200]
             self.changed = True
-            self.pressed = False
+            self.pressed = False       
         
 
     def handle_event(self, **kwargs):
         mouse_event = kwargs["mouse_event"]
         if mouse_event[0]:
             if self.frame_rect.collidepoint(pg.mouse.get_pos()):
-                self.action()
-                self.changed=True
-                self.infill_color = [100,100,100]
-                self.pressed = True
-
+                if not self.toggle:
+                    self.action()
+                    self.changed=True
+                    self.infill_color = [100,100,100]
+                    self.pressed = True
+                if self.toggle:
+                    self.action()
+                    self.changed=True
+                    if self.pressed:
+                        self.infill_color = [200,200,200]
+                        self.pressed = False
+                    else:
+                        self.infill_color = [100,100,100]
+                        self.pressed = True
+                        if self.pair_button != None and self.pair_button.pressed:
+                            self.pair_button.infill_color = [200,200,200]
+                            self.pair_button.pressed = False
+                            self.pair_button.changed = True
         
+    def set_pair_button(self, pair_button):
+        self.pair_button = pair_button
+
 class TextField(Button):
 
     def __init__(self, pos, size, action=None, frame=4, sensetivity=["MOUSE", "KEY"], text="", fit_text=False, static=False):
         Button.__init__(self, pos, size, action, frame, sensetivity, text, fit_text)
-        self.value = 0
+        self.value = text
         self.static = static
 
     def draw(self):
+        if self.pressed:
+            self.infill_color = [100,100,100]
+            self.changed = True
+            self.pressed = False
         self.textsurface = myfont.render(str(self.value), False, (0, 0, 0)) 
         pg.draw.rect(self.window, white, self.frame_rect)
         pg.draw.rect(self.window, self.infill_color, self.infill_rect)
         self.window.blit(self.textsurface, (self.pos_x+self.frame*1.5, self.pos_y+self.frame*1.5))
-        if self.pressed:
-            self.infill_color = [200,200,200]
-            self.changed = True
-            self.pressed = False
 
+    def change_text(self, text):
+        self.value = text
+        self.changed = True
 
     def handle_event(self, **kwargs):
+        try:
+            self.value = int(self.value)
+        except ValueError:
+            self.value = 0
         if not self.static:
             try:
                 mouse_event = kwargs["mouse_event"]
@@ -85,7 +109,6 @@ class TextField(Button):
             if mouse_event[0]:
                 self.changed = True
                 if self.frame_rect.collidepoint(pg.mouse.get_pos()):
-                    print("Hit!")
                     if not self.marked:
                         self.infill_color = [100,100,100]
                         self.marked = True
@@ -93,7 +116,6 @@ class TextField(Button):
                         self.infill_color = [200,200,200]
                         self.marked = False
                 else:
-                    print("Miss..")
                     self.infill_color = [200,200,200]
                     self.marked = False
             elif self.marked and sum(key_event) == 1:
@@ -101,6 +123,8 @@ class TextField(Button):
                     number = np.where(key_event[numbers]  == 1)[0][0]
                     if self.value <= 10:
                         self.value = self.value*10 + number
+                        if self.value > 100:
+                            self.value = 100
                         self.changed = True
                 except IndexError:
                     if key_event[pg.K_BACKSPACE]:
