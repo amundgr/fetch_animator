@@ -38,3 +38,6 @@ class Window():
             element.sensetivity = [element.sensetivity]
         for sens in element.sensetivity:
             self.sensetivity_dict[sens].append(name_tag)
+    
+    def remove_element(self, name_tag):
+        del self.element_dict[element_tag]

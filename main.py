@@ -98,8 +98,14 @@ move_mark_right_button = Button((500,900), 0, func_move_mark_right_button , text
 window.add_element(move_mark_right_button, "move_mark_right_button")
 
 def func_add_frame_button():
-    global num_x, num_y
-    animation.append(np.zeros((num_x, num_y)))
+    global num_x, num_y, current_frame
+    if current_frame < num_mini_displays:
+        current_frame += 1
+    else:
+        current_frame += 1
+        animation.insert(current_frame, np.zeros((num_x, num_y)))
+    print(len(animation))
+
     update_mini_display()
     return
 add_left_button = Button((560,900), 0, func_add_frame_button , text=" + ", fit_text=True)
@@ -172,6 +178,7 @@ window.add_element(pwm_text_field, "pwm_text_field")
 #-----------------------------------------------------------------------------------------#
 #-----------------------------------------FRAMES------------------------------------------#
 #-----------------------------------------------------------------------------------------#
+
 for i in range(7):
     mini_displays.append(DummyDisplay((55+i*170,700), 3, num_x=19, num_y=10, boarder=2))
     frame_numbers.append(TextField((105+i*170,800), (60,40), text="{}".format(i+1), fit_text=False, sensetivity=[]))
