@@ -19,7 +19,7 @@ cs_font = pg.font.SysFont('Comic Sans MS', font_size)
 arial_font = pg.font.SysFont('Arial', font_size)
 
 class Display(Element):
-    def __init__(self, pos, radius, num_x=10, num_y=10, spacing=2, boarder=5, sensetivity="MOUSE", value_label=None, pwm_button=None, select_button=None):
+    def __init__(self, pos, radius, num_x=10, num_y=10, spacing=2, boarder=5, sensetivity="MOUSE", value_label=None):
         Element.__init__(self, pos, sensetivity)
         self.pos_x, self.pos_y = self.pos
         self.radius = radius
@@ -44,8 +44,6 @@ class Display(Element):
         self.intensity = 255
         self.first = True
         self.value_label = value_label
-        self.pwm_button = pwm_button
-        self.select_button = select_button
 
 
     def draw(self):
@@ -71,16 +69,15 @@ class Display(Element):
 
     def handle_event(self, **kwargs):
         mouse_event = kwargs["mouse_event"]
-        if mouse_event[0] and self.frame_rect.collidepoint(kwargs["pos"]):
+        if self.frame_rect.collidepoint(kwargs["pos"]):
             pos_x, pos_y = kwargs["pos"]
             idx_x = (pos_x - self.pos_x - self.spacing) // (self.radius*2 + self.spacing) 
             idx_y = (pos_y - self.pos_y - self.spacing) // (self.radius*2 + self.spacing)
-            if self.value_label != None:
-                self.intensity = int(self.value_label)
-            if self.pwm_button != None:
-                if self.frame[idx_x, idx_y] > 0:
-                    self.frame[idx_x, idx_y] = self.intensity
-            #if self.
+            if mouse_event[0]:
+                if self.value_label != None:
+                    self.intensity = int(self.value_label.value)
+            if mouse_event[2]:
+                self.intensity = 0
             self.frame[idx_x, idx_y] = self.intensity
             self.changed = True
             

@@ -54,7 +54,6 @@ def update_mini_display():
         fn.infill_color = [200, 200, 200]
     frame_numbers[current_display].infill_color = [100,100,100]
 
-
 #-----------------------------------------------------------------------------------------#
 #-----------------------------------------BUTTONS-----------------------------------------#
 #-----------------------------------------------------------------------------------------#
@@ -119,27 +118,34 @@ def func_move_frame_left_button():
     return
 move_frame_left_button = Button((680,900), 0, func_move_frame_left_button , text="-->", fit_text=True)
 window.add_element(move_frame_left_button, "move_frame_Left_button")
-
+"""
 def func_set_pixel_value_button():
     return
 set_pixel_value_button = Button((450,950), 0, func_set_pixel_value_button , text="VAL", fit_text=True, toggle=True)
 window.add_element(set_pixel_value_button, "set_pixel_value_button")
-
+"""
 def func_apply_frame_button():
     animation[current_frame] = main_display.get_frame()
     mini_displays[current_display].load_frame(animation[current_frame])
     return
 apply_frame_button = Button((540,950), 0, func_apply_frame_button , text="ADD", fit_text=True)
 window.add_element(apply_frame_button, "apply_frame_button")
-
+"""
 def func_mark_pixel_button():
     return
 mark_pixel_button = Button((640,950), 0, func_mark_pixel_button , text="SEL", fit_text=True, toggle=True)
 mark_pixel_button.set_pair_button(set_pixel_value_button)
 set_pixel_value_button.set_pair_button(mark_pixel_button)
 window.add_element(mark_pixel_button, "mark_pixel_button")
-
-def func_play_button():
+"""
+def func_play_button(time=500):
+    global main_display, animation, current_frame, window
+    for i in range(len(animation)):
+        current_frame = i
+        main_display.load_frame(animation[i])
+        update_mini_display()
+        window.update()
+        pg.time.wait(time)
     return
 play_button = Button((1000,900), 0, func_play_button , text="PLAY", fit_text=True)
 window.add_element(play_button, "play_button")
@@ -177,7 +183,7 @@ for i in range(7):
 #--------------------------------------MAIN DISPLAY---------------------------------------#
 #-----------------------------------------------------------------------------------------#
 
-main_display = Display((50,50), 30, num_x=num_x, num_y=num_y)
+main_display = Display((50,50), 30, num_x=num_x, num_y=num_y, value_label=pwm_text_field)
 window.add_element(main_display, "Display")
 
 #-----------------------------------------------------------------------------------------#

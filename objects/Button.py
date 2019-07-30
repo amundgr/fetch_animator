@@ -77,6 +77,7 @@ class TextField(Button):
         Button.__init__(self, pos, size, action, frame, sensetivity, text, fit_text)
         self.value = text
         self.static = static
+        self.handle_event()
 
     def draw(self):
         if self.pressed:
@@ -96,7 +97,7 @@ class TextField(Button):
         try:
             self.value = int(self.value)
         except ValueError:
-            self.value = 0
+            self.value = 100
         if not self.static:
             try:
                 mouse_event = kwargs["mouse_event"]
