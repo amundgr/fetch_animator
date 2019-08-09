@@ -5,6 +5,7 @@ class Element():
         self.pos = pos
         self.changed = True
         self.sensetivity = sensetivity
+        self.window = None
 
     def set_window(self, window):
         self.window = window
@@ -15,6 +16,9 @@ class Element():
             self.draw()
 
     def draw(self):
+        pass
+
+    def delete(self):
         pass
 
     

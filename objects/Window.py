@@ -8,9 +8,9 @@ green = np.array([  0, 255,   0])
 blue  = np.array([  0,   0, 255])
 
 class Window():
-    def __init__(self, size, background=black):
+    def __init__(self, size, background=white/2):
         self.height, self.width = size
-        self.background = white/2
+        self.background = background
         self.window = pg.display.set_mode(size)
         self.window.fill(background)
         self.sensetivity_dict = {"MOUSE":[], "KEY":[], "NONE":[]}
@@ -39,5 +39,8 @@ class Window():
         for sens in element.sensetivity:
             self.sensetivity_dict[sens].append(name_tag)
     
-    def remove_element(self, name_tag):
-        del self.element_dict[element_tag]
+    def disable_element(self, name_tag):
+        self.element_dict[name_tag].disable()
+
+    def enable_element(self, name_tag):
+        self.element_dict[name_tag].enable()

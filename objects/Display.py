@@ -69,17 +69,20 @@ class Display(Element):
 
     def handle_event(self, **kwargs):
         mouse_event = kwargs["mouse_event"]
-        if self.frame_rect.collidepoint(kwargs["pos"]):
-            pos_x, pos_y = kwargs["pos"]
-            idx_x = (pos_x - self.pos_x - self.spacing) // (self.radius*2 + self.spacing) 
-            idx_y = (pos_y - self.pos_y - self.spacing) // (self.radius*2 + self.spacing)
-            if mouse_event[0]:
-                if self.value_label != None:
-                    self.intensity = int(self.value_label.value)
-            if mouse_event[2]:
-                self.intensity = 0
-            self.frame[idx_x, idx_y] = self.intensity
-            self.changed = True
+        try:
+            if self.frame_rect.collidepoint(kwargs["pos"]):
+                pos_x, pos_y = kwargs["pos"]
+                idx_x = (pos_x - self.pos_x - self.spacing) // (self.radius*2 + self.spacing) 
+                idx_y = (pos_y - self.pos_y - self.spacing) // (self.radius*2 + self.spacing)
+                if mouse_event[0]:
+                    if self.value_label != None:
+                        self.intensity = int(self.value_label.value)
+                if mouse_event[2]:
+                    self.intensity = 0
+                self.frame[idx_x, idx_y] = self.intensity
+                self.changed = True
+        except IndexError:
+            pass
             
     def clear_frame(self):
         self.frame = self.frame*0

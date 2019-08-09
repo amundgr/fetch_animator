@@ -3,17 +3,18 @@ import pygame as pg
 import numpy as np
 
 pg.font.init()
-white = [255, 255, 255]
-black = [0,0,0]
+white = np.array([255, 255, 255])
+black = np.array([0,0,0])
 myfont = pg.font.SysFont('Comic Sans MS', 50)
 numbers = np.array([pg.K_0, pg.K_1, pg.K_2, pg.K_3, pg.K_4,
            pg.K_5, pg.K_6, pg.K_7, pg.K_8, pg.K_9])
 
 
 class Button(Element):
-    def __init__(self, pos, size, action, frame=4, sensetivity="MOUSE", text="", fit_text=False, toggle=False, pair_button=None):
+    def __init__(self, pos, size, action, frame=4, sensetivity="MOUSE", text="", fit_text=False, toggle=False, pair_button=None, text_color=black):
         Element.__init__(self, pos, sensetivity)
-        self.textsurface = myfont.render(text, False, (0, 0, 0)) 
+        self.text_color = text_color
+        self.textsurface = myfont.render(text, False, text_color) 
         self.pos = self.pos_x, self.pos_y = pos
         self.action = action
         self.frame = frame
@@ -28,6 +29,7 @@ class Button(Element):
         self._create_rect()
         self.pressed = False
         self.infill_color = [200,200,200]
+        self.frame_color = white
         self.toggle = toggle
 
     def _create_rect(self):
@@ -73,19 +75,26 @@ class Button(Element):
 
 class TextField(Button):
 
-    def __init__(self, pos, size, action=None, frame=4, sensetivity=["MOUSE", "KEY"], text="", fit_text=False, static=False):
-        Button.__init__(self, pos, size, action, frame, sensetivity, text, fit_text)
+    def __init__(self, pos, size, action=None, frame=4, sensetivity=["MOUSE", "KEY"], text="", fit_text=False, static=False, text_color=black, disabled=False):
+        Button.__init__(self, pos, size, action, frame, sensetivity, text, fit_text, text_color)
         self.value = text
         self.static = static
         self.handle_event()
+        self.frame_color = white
+        self.disabled = disabled
 
     def draw(self):
+        if self.disabled:
+            self.frame_color = white / 2
+            self.infill_color = white / 2
+            self.text_color = white / 2
+
         if self.pressed:
             self.infill_color = [100,100,100]
             self.changed = True
             self.pressed = False
-        self.textsurface = myfont.render(str(self.value), False, (0, 0, 0)) 
-        pg.draw.rect(self.window, white, self.frame_rect)
+        self.textsurface = myfont.render(str(self.value), False, self.text_color) 
+        pg.draw.rect(self.window, self.frame_color, self.frame_rect)
         pg.draw.rect(self.window, self.infill_color, self.infill_rect)
         self.window.blit(self.textsurface, (self.pos_x+self.frame*1.5, self.pos_y+self.frame*1.5))
 
@@ -132,8 +141,18 @@ class TextField(Button):
                         self.value = 0
                         self.changed = True
                     pass 
-            
-            
+        
+    def disable(self):
+        self.disabled = True
+        self.draw()
+
+
+    def enable(self):
+        self.frame_color = white
+        self.infill_color = [100,100,100]  
+        self.text_color = black
+        self.disabled = False
+        self.draw()          
 
 if __name__ == '__main__':
     from Window import Window
