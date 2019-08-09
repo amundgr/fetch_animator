@@ -25,7 +25,7 @@ num_mini_displays = 7
 num_active_mini_displays = 1
 
 window = Window((width, height))
-pg.event.set_blocked(pg.MOUSEMOTION)
+#pg.event.set_blocked(pg.MOUSEMOTION)
 img = pg.image.load(img_path + 'logo.png')
 window.window.fill((0,0,0))
 window.window.blit(img,(width/2-300,height/2-300))
