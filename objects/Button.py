@@ -31,6 +31,7 @@ class Button(Element):
         self.infill_color = [200,200,200]
         self.frame_color = white
         self.toggle = toggle
+        self.time_prev_click = 0
 
     def _create_rect(self):
         self.frame_rect = pg.Rect(self.pos_x, self.pos_y, self.width, self.height)

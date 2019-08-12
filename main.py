@@ -1,5 +1,6 @@
 import pygame as pg
 import numpy as np
+import copy as cp
 import sys
 
 #Needs to be called before import homemade modules
@@ -47,6 +48,15 @@ def print_vitals():
         print(a.transpose())
         print()
     print()
+
+prev_click = 0
+def prevent_double_click(timeout=5):
+    global prev_click
+    time_since_prev_click = pg.time.get_ticks() - prev_click
+    if time_since_prev_click < timeout:
+        return False
+    else:
+        return True
 
 def get_frame_slice():
     global current_frame, num_mini_displays, animation, current_display
@@ -127,16 +137,17 @@ window.add_element(move_mark_right_button, "move_mark_right_button")
 
 def func_add_frame_button():
     global num_x, num_y, current_frame, num_active_mini_displays, num_frames
-    if num_active_mini_displays < num_mini_displays:
-        num_active_mini_displays += 1
-        inc = num_active_mini_displays - 1
-        window.enable_element("N{}".format(inc+1))
-    else:
-        animation.insert(current_frame+1, np.zeros((num_x, num_y)))
+    if prevent_double_click:
+        if num_active_mini_displays < num_mini_displays:
+            num_active_mini_displays += 1
+            inc = num_active_mini_displays - 1
+            window.enable_element("N{}".format(inc+1))
+        else:
+            animation.insert(current_frame+1, np.zeros((num_x, num_y)))
 
-    current_frame += 1
-    num_frames += 1
-    update_mini_display()
+        current_frame += 1
+        num_frames += 1
+        update_mini_display()
     return
 add_left_button = Button((1380,300), 0, func_add_frame_button , text="  +  ", fit_text=True)
 window.add_element(add_left_button, "add_left_button")
@@ -185,8 +196,34 @@ def func_load_button():
 load_button = Button((1360,50), 0, func_load_button , text="LOAD", fit_text=True)
 window.add_element(load_button, "load_button")
 
-def func_save_button():
+def func_save_button(outfile="out"):
+    global num_frames, num_x, num_y, animation
+    pwm_frames = []
+    with open("{}.bin".format(outfile), "wb") as fp:
+        for i in range(num_frames):
+            frame = cp.deepcopy(animation[i])
+            frame = frame.transpose()
+            print(frame.shape)
+            frame = np.flip(frame, 0)
+            binary_factors = 2**np.linspace(0,num_y, num_y+1)[0:-1]
+    
+            binary_frame_matrix = (frame > 0)
+            binary_frame_array = np.sum(binary_frame_matrix * binary_factors.reshape(-1,1), 0)
+            binary_frame_array_uint32 = np.uint32(binary_frame_array.astype(int))
+    
+            frame[frame == 0] = 20
+            pwm_frame_uint8 = np.uint8(frame)
+            
+            fp.write(bytes(binary_frame_array_uint32))
+            pwm_frames.append(pwm_frame_uint8)
+    
+        for pwm_frame in pwm_frames:
+            fp.write(bytes(pwm_frame))
+
+    with open("{}.txt".format(outfile), "w") as fp:
+        fp.write("{},{},{},0,0,1,0,-1,0,-1,0".format(num_x, num_y, num_frames))
     return
+
 save_button = Button((1480,50), 0, func_save_button , text="SAVE", fit_text=True)
 window.add_element(save_button, "save_button")
 
@@ -245,8 +282,7 @@ try:
             pg.display.quit()
             pg.quit()
             sys.exit()
-finally:
 
-    print_vitals()
-    
-    
+finally:
+    func_save_button(outfile="backup")
+    #print_vitals()

@@ -121,6 +121,9 @@ class DummyDisplay(Display):
             self.marked = True
             self.changed = True
 
+    def disable(self):
+        pass
+
 if __name__=="__main__":
     dd = DummyDisplay((1,1), 20)
     print(dd.img_clean)
