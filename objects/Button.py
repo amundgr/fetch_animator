@@ -134,8 +134,8 @@ class TextField(Button):
                     number = np.where(key_event[numbers]  == 1)[0][0]
                     if self.value <= 10:
                         self.value = self.value*10 + number
-                        if self.value > 100:
-                            self.value = 100
+                        if self.value > 19:
+                            self.value = 19
                         self.changed = True
                 except IndexError:
                     if key_event[pg.K_BACKSPACE]:

@@ -166,7 +166,7 @@ def func_apply_frame_button():
     animation[current_frame] = main_display.get_frame()
     mini_displays[current_display].load_frame(animation[current_frame])
     return
-apply_frame_button = Button((1370,350), 0, func_apply_frame_button , text="ADD", fit_text=True)
+apply_frame_button = Button((1340,350), 0, func_apply_frame_button , text="ADD", fit_text=True)
 window.add_element(apply_frame_button, "apply_frame_button")
 
 
@@ -233,7 +233,7 @@ window.add_element(save_button, "save_button")
 
 def func_pwm_text_field():
     return
-pwm_text_field = TextField((1379,400), 0, func_pwm_text_field , text="100", fit_text=True)
+pwm_text_field = TextField((1440,350), 0, func_pwm_text_field , text="19", fit_text=True)
 window.add_element(pwm_text_field, "pwm_text_field")
 
 #-----------------------------------------------------------------------------------------#
